@@ -43,6 +43,42 @@
 
 .hero{
     text-align:center;
+    position:relative;
+}
+.gold-chart{
+    position:absolute;
+    top:10px;
+    right:10px;
+    width:90px;
+    height:60px;
+    border:1px solid rgba(227,176,75,.3);
+    border-radius:12px;
+    background:rgba(20,17,12,.55);
+    backdrop-filter:blur(10px);
+    overflow:hidden;
+}
+
+.gold-chart svg{
+    width:100%;
+    height:100%;
+}
+
+.gold-chart polyline{
+    fill:none;
+    stroke:#e3b04b;
+    stroke-width:3;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+    animation:chartMove 3s ease-in-out infinite;
+}
+
+@keyframes chartMove{
+    0%,100%{
+        transform:translateY(0);
+    }
+    50%{
+        transform:translateY(-5px);
+    }
 }
   /* fine grain — the "expensive print" feel */
   body::after {
@@ -367,15 +403,19 @@ backdrop-filter:blur(15px);
 
   <!-- ============ HERO ============ -->
   <div class="hero">
+<div class="gold-chart">
+    <svg viewBox="0 0 100 60">
+        <polyline points="0,50 15,45 25,48 40,30 55,35 70,20 85,25 100,8"></polyline>
+    </svg>
+</div>
+    <img src="IMG_0013.jpeg" class="logo" alt="Gold Sniper">
 
-<img src="IMG_0013.jpeg" class="logo" alt="Gold Sniper">
+    <h1 class="serif">GOLD SNIPERS VIP</h1>
 
-<h1 class="serif">GOLD SNIPERS VIP</h1>
-
-<p>
-Premium XAUUSD signals with TP/SL,
-risk management and live market analysis.
-</p>
+    <p>
+        Premium XAUUSD signals with TP/SL,
+        risk management and live market analysis.
+    </p>
     <div class="actions">
       <a class="btn" href="#plans">Become a member</a>
       <span class="pay-note">Paid with <b>Telegram Stars</b> —<br>nothing leaves Telegram.</span>
@@ -592,14 +632,9 @@ risk management and live market analysis.
   // With links filled in, the buy buttons open Telegram's native payment sheet INSTANTLY,
   // right on top of this page. Empty = fallback via the bot chat (still works).
   const LINKS = {
-  '1m': 'https://t.me/$3l1V_B5aVGGBgAAXNfCjSszCpo',
-  'p1m': 'https://t.me/$IvUZEuB5aVGHBgAAK_77dmgqOWI',
-  '2m': 'https://t.me/$gRwxFOB5aVGIBgAA2KfFMqjthbQ',
-  'p2m': 'https://t.me/$m8dIo-B5aVGJBgAATQCxPhWyMHc',
-  'life': 'https://t.me/$77xb-B5aVGKBgAAch-r51bjo15',
-  'plife': 'https://t.me/$X72iwuB5aVGLBgAACL5HLEhL9l8'
-};      // list price
-        // with code XAUUSD
+    '1m': '', '2m': '', 'life': '',      // list price
+    'p1m': '', 'p2m': '', 'plife': ''    // with code XAUUSD
+  };
   const PRICES = { '1m': ['1,250','1,000'], '2m': ['1,565','1,250'], 'life': ['3,750','3,000'] };
   let promoOn = false;
 
