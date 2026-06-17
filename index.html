@@ -1,1 +1,1427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>XAUFX VIP – Gold Signals</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;900&display=swap');
+
+  :root {
+    --gold: #FFD700;
+    --gold2: #FFA500;
+    --gold3: #B8860B;
+    --bg: #050505;
+    --bg2: #0a0a0a;
+    --white: #ffffff;
+    --gray: #888;
+    --card: rgba(255,215,0,0.04);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--white);
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* ─── WELCOME SCREEN ─── */
+  #welcome-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+    overflow: hidden;
+  }
+
+  .welcome-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 50%, #1a1200 0%, #000 70%);
+  }
+
+  /* Particle canvas */
+  #particle-canvas {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .welcome-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+  }
+
+  .welcome-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 6px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.3s forwards;
+  }
+
+  .welcome-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(72px, 18vw, 160px);
+    line-height: 0.9;
+    background: linear-gradient(135deg, #fff 0%, #FFD700 40%, #FFA500 70%, #fff 100%);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradientShift 3s ease infinite, fadeUp 1s 0.5s both;
+    filter: drop-shadow(0 0 40px rgba(255,215,0,0.4));
+  }
+
+  @keyframes gradientShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  .welcome-sub {
+    font-size: clamp(14px, 3vw, 20px);
+    font-weight: 300;
+    color: rgba(255,255,255,0.6);
+    letter-spacing: 3px;
+    margin-top: 16px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.8s forwards;
+  }
+
+  .welcome-btn {
+    margin-top: 52px;
+    padding: 18px 56px;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #000;
+    font-family: 'Inter', sans-serif;
+    font-weight: 900;
+    font-size: 14px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    animation: fadeUp 0.8s 1.2s forwards;
+    clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+    transition: transform 0.2s, filter 0.2s;
+  }
+
+  .welcome-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #fff 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .welcome-btn:hover { transform: scale(1.05); filter: brightness(1.2); }
+  .welcome-btn:hover::before { opacity: 0.2; }
+
+  .welcome-lines {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .line {
+    position: absolute;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, rgba(255,215,0,0.3), transparent);
+    animation: lineFall linear infinite;
+    opacity: 0;
+  }
+
+  @keyframes lineFall {
+    0% { transform: translateY(-100%); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(100vh); opacity: 0; }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── EXPLODE TRANSITION ─── */
+  #explode-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+    pointer-events: none;
+    display: none;
+  }
+
+  .shard {
+    position: absolute;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    transform-origin: center;
+    border-radius: 2px;
+  }
+
+  /* ─── MAIN SITE ─── */
+  #main-site {
+    display: none;
+    opacity: 0;
+  }
+
+  #main-site.visible {
+    display: block;
+    animation: siteReveal 1s 0.3s both;
+  }
+
+  @keyframes siteReveal {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.95), transparent);
+    backdrop-filter: blur(10px);
+  }
+
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 2px;
+  }
+
+  .nav-cta {
+    padding: 10px 28px;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #000;
+    font-weight: 800;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-decoration: none;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    transition: filter 0.2s, transform 0.2s;
+  }
+
+  .nav-cta:hover { filter: brightness(1.15); transform: scale(1.04); }
+
+  /* ─── HERO ─── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    padding: 120px 24px 80px;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 50% 60%, rgba(255,215,0,0.08) 0%, transparent 70%),
+      radial-gradient(ellipse 30% 30% at 20% 20%, rgba(255,165,0,0.05) 0%, transparent 60%),
+      #050505;
+  }
+
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,215,0,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,215,0,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+    animation: gridPulse 4s ease-in-out infinite;
+  }
+
+  @keyframes gridPulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+
+  .hero-badge {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 20px;
+    border: 1px solid rgba(255,215,0,0.3);
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 32px;
+    background: rgba(255,215,0,0.05);
+    animation: pulse-border 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-border {
+    0%, 100% { border-color: rgba(255,215,0,0.3); box-shadow: 0 0 0 rgba(255,215,0,0); }
+    50% { border-color: rgba(255,215,0,0.7); box-shadow: 0 0 20px rgba(255,215,0,0.15); }
+  }
+
+  .badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #00ff88;
+    box-shadow: 0 0 8px #00ff88;
+    animation: blink 1.5s ease-in-out infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .hero-title {
+    position: relative;
+    z-index: 1;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(60px, 14vw, 130px);
+    line-height: 0.92;
+    letter-spacing: 2px;
+  }
+
+  .hero-title .line1 {
+    display: block;
+    color: white;
+    animation: slideInLeft 0.8s 0.1s both;
+  }
+
+  .hero-title .line2 {
+    display: block;
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FFD700 100%);
+    background-size: 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: slideInRight 0.8s 0.2s both, gradientShift 3s ease infinite;
+    filter: drop-shadow(0 0 30px rgba(255,215,0,0.5));
+  }
+
+  .hero-title .line3 {
+    display: block;
+    color: white;
+    animation: slideInLeft 0.8s 0.3s both;
+  }
+
+  @keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-60px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes slideInRight {
+    from { opacity: 0; transform: translateX(60px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .hero-desc {
+    position: relative;
+    z-index: 1;
+    margin-top: 28px;
+    max-width: 520px;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.7;
+    color: rgba(255,255,255,0.55);
+    animation: fadeUp 0.8s 0.5s both;
+  }
+
+  .hero-stats {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    gap: 48px;
+    margin-top: 52px;
+    animation: fadeUp 0.8s 0.7s both;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    line-height: 1;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .stat-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-top: 4px;
+  }
+
+  .stat-divider {
+    width: 1px;
+    background: rgba(255,215,0,0.2);
+    align-self: stretch;
+  }
+
+  .hero-cta {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    gap: 16px;
+    margin-top: 52px;
+    animation: fadeUp 0.8s 0.9s both;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .btn-primary {
+    padding: 18px 48px;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #000;
+    font-weight: 900;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-decoration: none;
+    clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+    transition: filter 0.2s, transform 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-primary::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 40%;
+    height: 200%;
+    background: rgba(255,255,255,0.3);
+    transform: rotate(30deg);
+    animation: sheen 3s ease infinite;
+  }
+
+  @keyframes sheen {
+    0% { left: -100%; }
+    40%, 100% { left: 150%; }
+  }
+
+  .btn-primary:hover { filter: brightness(1.15); transform: scale(1.04); }
+
+  .btn-secondary {
+    padding: 18px 48px;
+    background: transparent;
+    color: var(--gold);
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 1px solid rgba(255,215,0,0.4);
+    clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+    transition: background 0.3s, border-color 0.3s;
+  }
+
+  .btn-secondary:hover { background: rgba(255,215,0,0.08); border-color: var(--gold); }
+
+  /* Floating gold orbs */
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    animation: float linear infinite;
+  }
+  .orb1 { width: 400px; height: 400px; background: rgba(255,215,0,0.06); top: 10%; left: -10%; animation-duration: 20s; }
+  .orb2 { width: 300px; height: 300px; background: rgba(255,140,0,0.06); top: 50%; right: -5%; animation-duration: 25s; animation-delay: -8s; }
+  .orb3 { width: 200px; height: 200px; background: rgba(255,215,0,0.08); bottom: 20%; left: 30%; animation-duration: 18s; animation-delay: -12s; }
+
+  @keyframes float {
+    0% { transform: translate(0,0) rotate(0deg); }
+    33% { transform: translate(30px,-40px) rotate(120deg); }
+    66% { transform: translate(-20px,20px) rotate(240deg); }
+    100% { transform: translate(0,0) rotate(360deg); }
+  }
+
+  /* Ticker */
+  .ticker {
+    width: 100%;
+    overflow: hidden;
+    border-top: 1px solid rgba(255,215,0,0.1);
+    border-bottom: 1px solid rgba(255,215,0,0.1);
+    background: rgba(255,215,0,0.02);
+    padding: 14px 0;
+  }
+
+  .ticker-inner {
+    display: flex;
+    width: max-content;
+    animation: ticker 20s linear infinite;
+  }
+
+  .ticker-item {
+    padding: 0 48px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    white-space: nowrap;
+    color: var(--gold);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .ticker-item span { color: rgba(255,255,255,0.3); }
+  .up { color: #00ff88; }
+  .down { color: #ff4444; }
+
+  @keyframes ticker {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* ─── SECTION ─── */
+  section {
+    padding: 100px 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(40px, 7vw, 72px);
+    line-height: 1;
+    color: white;
+    margin-bottom: 20px;
+  }
+
+  .section-title .gold {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ─── WHY SECTION ─── */
+  .why-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    margin-top: 60px;
+  }
+
+  .why-card {
+    background: var(--card);
+    border: 1px solid rgba(255,215,0,0.1);
+    padding: 36px 32px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s, transform 0.3s;
+    clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+  }
+
+  .why-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 2px;
+    background: linear-gradient(90deg, transparent, #FFD700, transparent);
+    transform: translateX(-100%);
+    transition: transform 0.6s;
+  }
+
+  .why-card:hover { border-color: rgba(255,215,0,0.4); transform: translateY(-6px); }
+  .why-card:hover::before { transform: translateX(100%); }
+
+  .why-icon {
+    font-size: 36px;
+    margin-bottom: 20px;
+    display: block;
+  }
+
+  .why-card h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    letter-spacing: 1px;
+    color: white;
+    margin-bottom: 10px;
+  }
+
+  .why-card p {
+    font-size: 14px;
+    line-height: 1.7;
+    color: rgba(255,255,255,0.5);
+  }
+
+  /* ─── RESULTS ─── */
+  .results-section {
+    background: rgba(255,215,0,0.02);
+    border-top: 1px solid rgba(255,215,0,0.08);
+    border-bottom: 1px solid rgba(255,215,0,0.08);
+    padding: 100px 24px;
+  }
+
+  .results-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2px;
+    margin-top: 60px;
+    border: 1px solid rgba(255,215,0,0.1);
+  }
+
+  .result-cell {
+    padding: 40px 32px;
+    text-align: center;
+    border: 1px solid rgba(255,215,0,0.08);
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+  }
+
+  .result-cell:hover { background: rgba(255,215,0,0.04); }
+
+  .result-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 56px;
+    line-height: 1;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    counter-increment: none;
+  }
+
+  .result-sub {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-top: 8px;
+  }
+
+  /* ─── REVIEWS ─── */
+  .reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 60px;
+  }
+
+  .review-card {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.06);
+    padding: 32px;
+    position: relative;
+    transition: border-color 0.3s, transform 0.3s;
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+  }
+
+  .review-card:hover { border-color: rgba(255,215,0,0.25); transform: translateY(-4px); }
+
+  .stars {
+    color: var(--gold);
+    font-size: 16px;
+    letter-spacing: 2px;
+    margin-bottom: 16px;
+  }
+
+  .review-text {
+    font-size: 15px;
+    line-height: 1.7;
+    color: rgba(255,255,255,0.7);
+    font-style: italic;
+    margin-bottom: 24px;
+  }
+
+  .review-author {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .author-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 16px;
+    color: #000;
+    flex-shrink: 0;
+  }
+
+  .author-name { font-weight: 700; font-size: 14px; }
+  .author-tag { font-size: 12px; color: var(--gray); }
+
+  /* ─── PRICING ─── */
+  .pricing-section {
+    padding: 100px 24px;
+  }
+
+  .pricing-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 60px;
+  }
+
+  .price-card {
+    background: rgba(255,215,0,0.03);
+    border: 1px solid rgba(255,215,0,0.12);
+    padding: 44px 36px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s, border-color 0.3s;
+    clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+  }
+
+  .price-card.featured {
+    border-color: rgba(255,215,0,0.5);
+    background: rgba(255,215,0,0.06);
+    transform: scale(1.03);
+  }
+
+  .price-card.featured::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,215,0,0.06), transparent);
+    pointer-events: none;
+  }
+
+  .price-card:hover { transform: translateY(-8px) scale(1.01); border-color: rgba(255,215,0,0.4); }
+  .price-card.featured:hover { transform: translateY(-8px) scale(1.04); }
+
+  .price-badge {
+    position: absolute;
+    top: 24px;
+    right: -8px;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #000;
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 6px 20px 6px 12px;
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 8px 50%);
+  }
+
+  .price-plan {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+  }
+
+  .price-amount {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+
+  .price-stars {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 56px;
+    line-height: 1;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .price-unit {
+    font-size: 14px;
+    color: var(--gray);
+    font-weight: 500;
+  }
+
+  .price-old {
+    font-size: 14px;
+    color: rgba(255,255,255,0.3);
+    text-decoration: line-through;
+    margin-bottom: 28px;
+  }
+
+  .price-features {
+    list-style: none;
+    margin-bottom: 36px;
+  }
+
+  .price-features li {
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 14px;
+    color: rgba(255,255,255,0.65);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .price-features li::before {
+    content: '✦';
+    color: var(--gold);
+    font-size: 10px;
+    flex-shrink: 0;
+  }
+
+  .price-btn {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    text-align: center;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #000;
+    font-weight: 900;
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: filter 0.2s, transform 0.2s;
+    position: relative;
+    overflow: hidden;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  }
+
+  .price-btn::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -70%;
+    width: 50%;
+    height: 200%;
+    background: rgba(255,255,255,0.3);
+    transform: rotate(30deg);
+    animation: sheen 2.5s ease infinite;
+  }
+
+  .price-btn:hover { filter: brightness(1.15); transform: scale(1.02); }
+
+  .price-btn.outline {
+    background: transparent;
+    color: var(--gold);
+    border: 1px solid rgba(255,215,0,0.4);
+  }
+
+  .price-btn.outline:hover { background: rgba(255,215,0,0.08); }
+  .price-btn.outline::after { display: none; }
+
+  /* Stars symbol */
+  .star-icon {
+    display: inline-block;
+    font-size: 20px;
+    vertical-align: middle;
+    margin-right: 2px;
+  }
+
+  /* ─── HOW IT WORKS ─── */
+  .how-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 32px;
+    margin-top: 60px;
+    position: relative;
+  }
+
+  .step {
+    text-align: center;
+    padding: 32px 24px;
+  }
+
+  .step-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 80px;
+    line-height: 1;
+    -webkit-text-stroke: 1px rgba(255,215,0,0.3);
+    color: transparent;
+    margin-bottom: 16px;
+  }
+
+  .step h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 1px;
+    color: white;
+    margin-bottom: 10px;
+  }
+
+  .step p {
+    font-size: 13px;
+    line-height: 1.7;
+    color: rgba(255,255,255,0.45);
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    text-align: center;
+    padding: 60px 24px;
+    border-top: 1px solid rgba(255,215,0,0.08);
+    color: rgba(255,255,255,0.3);
+    font-size: 13px;
+  }
+
+  footer .footer-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  /* ─── SCROLL ANIMATIONS ─── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.7s, transform 0.7s;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* ─── SCROLLBAR ─── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: #000; }
+  ::-webkit-scrollbar-thumb { background: linear-gradient(to bottom, #FFD700, #FFA500); }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 600px) {
+    nav { padding: 16px 20px; }
+    .hero-stats { gap: 24px; }
+    .stat-num { font-size: 36px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══ WELCOME SCREEN ═══ -->
+<div id="welcome-screen">
+  <div class="welcome-bg"></div>
+  <canvas id="particle-canvas"></canvas>
+
+  <div class="welcome-lines" id="lines-container"></div>
+
+  <div class="welcome-content">
+    <div class="welcome-label">⚡ Premium Gold Signals</div>
+    <h1 class="welcome-title">WELCOME<br>TO XAUFX</h1>
+    <p class="welcome-sub">THE GOLD TRADING REVOLUTION</p>
+    <button class="welcome-btn" onclick="explodeIn()">ENTER THE VIP ▶</button>
+  </div>
+</div>
+
+<!-- ═══ EXPLODE OVERLAY ═══ -->
+<div id="explode-overlay"></div>
+
+<!-- ═══ MAIN SITE ═══ -->
+<div id="main-site">
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">XAUFX VIP</div>
+    <a href="https://t.me/XaufxVIPbot" target="_blank" class="nav-cta">Join VIP →</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero" style="max-width:100%;padding:0;">
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="orb orb3"></div>
+
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      Live signals running now
+    </div>
+
+    <h1 class="hero-title">
+      <span class="line1">TRADE GOLD</span>
+      <span class="line2">LIKE A PRO</span>
+      <span class="line3">WITH XAUFX</span>
+    </h1>
+
+    <p class="hero-desc">
+      Precision XAUUSD signals with every entry, stop loss, and take profit posted in real time inside our exclusive Telegram VIP group.
+    </p>
+
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-num" id="wr-counter">0%</div>
+        <div class="stat-label">Win Rate</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <div class="stat-num">5</div>
+        <div class="stat-label">Signals / Day</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <div class="stat-num">24/7</div>
+        <div class="stat-label">Support</div>
+      </div>
+    </div>
+
+    <div class="hero-cta">
+      <a href="#pricing" class="btn-primary">Get VIP Access</a>
+      <a href="#how" class="btn-secondary">How It Works</a>
+    </div>
+  </section>
+
+  <!-- TICKER -->
+  <div class="ticker">
+    <div class="ticker-inner" id="ticker-inner">
+      <div class="ticker-item">XAUUSD <span class="up">▲ +1.2%</span> <span>2,342.50</span></div>
+      <div class="ticker-item">SIGNAL <span class="up">✔ WIN</span> <span>+85 PIPS</span></div>
+      <div class="ticker-item">XAUUSD <span class="up">▲ +0.8%</span> <span>2,348.10</span></div>
+      <div class="ticker-item">WIN RATE <span class="up">88%</span> <span>THIS WEEK</span></div>
+      <div class="ticker-item">SIGNAL <span class="up">✔ WIN</span> <span>+120 PIPS</span></div>
+      <div class="ticker-item">NEW VIP MEMBER <span>🇳🇱</span></div>
+      <div class="ticker-item">SIGNAL <span class="up">✔ WIN</span> <span>+65 PIPS</span></div>
+      <div class="ticker-item">XAUUSD <span>LIVE NOW →</span></div>
+      <!-- duplicate for seamless loop -->
+      <div class="ticker-item">XAUUSD <span class="up">▲ +1.2%</span> <span>2,342.50</span></div>
+      <div class="ticker-item">SIGNAL <span class="up">✔ WIN</span> <span>+85 PIPS</span></div>
+      <div class="ticker-item">XAUUSD <span class="up">▲ +0.8%</span> <span>2,348.10</span></div>
+      <div class="ticker-item">WIN RATE <span class="up">88%</span> <span>THIS WEEK</span></div>
+      <div class="ticker-item">SIGNAL <span class="up">✔ WIN</span> <span>+120 PIPS</span></div>
+      <div class="ticker-item">NEW VIP MEMBER <span>🇳🇱</span></div>
+      <div class="ticker-item">SIGNAL <span class="up">✔ WIN</span> <span>+65 PIPS</span></div>
+      <div class="ticker-item">XAUUSD <span>LIVE NOW →</span></div>
+    </div>
+  </div>
+
+  <!-- WHY SECTION -->
+  <section id="why">
+    <div class="section-label">Why Choose Us</div>
+    <h2 class="section-title">THE EDGE YOU'VE<br>BEEN <span class="gold">MISSING</span></h2>
+    <div class="why-grid">
+      <div class="why-card reveal">
+        <span class="why-icon">🎯</span>
+        <h3>Precision Entries</h3>
+        <p>Every signal includes a precise entry price, stop loss, and up to 3 take profit levels. No guesswork — just follow and profit.</p>
+      </div>
+      <div class="why-card reveal">
+        <span class="why-icon">⚡</span>
+        <h3>Real-Time Alerts</h3>
+        <p>Get notified the moment a signal fires. 5 trades per day, all posted live in our Telegram with full transparency.</p>
+      </div>
+      <div class="why-card reveal">
+        <span class="why-icon">🏆</span>
+        <h3>Proven Win Rate</h3>
+        <p>Our signals are backed by a consistent high win rate. Every trade tracked and verified — wins and losses both shown.</p>
+      </div>
+      <div class="why-card reveal">
+        <span class="why-icon">💬</span>
+        <h3>VIP Community</h3>
+        <p>Join a private Telegram group of serious gold traders. Ask questions, learn strategies, and grow together.</p>
+      </div>
+      <div class="why-card reveal">
+        <span class="why-icon">📊</span>
+        <h3>Risk Management</h3>
+        <p>Each signal comes with proper risk management built in. We protect your capital first, profits second.</p>
+      </div>
+      <div class="why-card reveal">
+        <span class="why-icon">🚀</span>
+        <h3>Instant Access</h3>
+        <p>Pay via Telegram Stars and get instant access to the VIP group. No delays, no waiting — start trading today.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULTS SECTION -->
+  <div class="results-section">
+    <div class="results-inner">
+      <div class="section-label">Track Record</div>
+      <h2 class="section-title">NUMBERS DON'T<br><span class="gold">LIE</span></h2>
+      <div class="results-grid reveal">
+        <div class="result-cell">
+          <div class="result-num">88%</div>
+          <div class="result-sub">Win Rate</div>
+        </div>
+        <div class="result-cell">
+          <div class="result-num">5</div>
+          <div class="result-sub">Signals Per Day</div>
+        </div>
+        <div class="result-cell">
+          <div class="result-num">850+</div>
+          <div class="result-sub">Pips This Month</div>
+        </div>
+        <div class="result-cell">
+          <div class="result-num">500+</div>
+          <div class="result-sub">VIP Members</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <section id="how">
+    <div class="section-label">Process</div>
+    <h2 class="section-title">HOW IT<br><span class="gold">WORKS</span></h2>
+    <div class="how-steps">
+      <div class="step reveal">
+        <div class="step-num">01</div>
+        <h3>Choose Your Plan</h3>
+        <p>Pick 1 Month, 2 Months, or Lifetime access below. All plans include full VIP benefits.</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">02</div>
+        <h3>Pay with Stars</h3>
+        <p>Our bot accepts Telegram Stars. Fast, secure, and instant — no bank details needed.</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">03</div>
+        <h3>Join the Group</h3>
+        <p>Get instant access to our private Telegram VIP signal group the moment payment is confirmed.</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">04</div>
+        <h3>Follow & Profit</h3>
+        <p>Receive 5 signals per day with entry, SL & TP. Follow the alerts and watch your account grow.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- REVIEWS -->
+  <section id="reviews" style="padding-top:0;">
+    <div class="section-label">Testimonials</div>
+    <h2 class="section-title">WHAT OUR<br><span class="gold">MEMBERS SAY</span></h2>
+    <div class="reviews-grid">
+      <div class="review-card reveal">
+        <div class="stars">★★★★★</div>
+        <p class="review-text">"I've tried many signal services but XAUFX is on another level. The win rate is real and the entries are always spot on. Already made back my subscription in the first week."</p>
+        <div class="review-author">
+          <div class="author-avatar">A</div>
+          <div>
+            <div class="author-name">Ahmed K.</div>
+            <div class="author-tag">VIP Member · 3 months</div>
+          </div>
+        </div>
+      </div>
+      <div class="review-card reveal">
+        <div class="stars">★★★★★</div>
+        <p class="review-text">"5 signals a day and most of them hit TP. The transparency is what got me — they post every result, wins AND losses. You can trust these guys completely."</p>
+        <div class="review-author">
+          <div class="author-avatar">M</div>
+          <div>
+            <div class="author-name">Marco V.</div>
+            <div class="author-tag">VIP Member · 6 months</div>
+          </div>
+        </div>
+      </div>
+      <div class="review-card reveal">
+        <div class="stars">★★★★★</div>
+        <p class="review-text">"Lifetime was the best investment I made this year. The community is incredibly helpful and the signals are consistent. Gold trading finally makes sense to me."</p>
+        <div class="review-author">
+          <div class="author-avatar">S</div>
+          <div>
+            <div class="author-name">Sara L.</div>
+            <div class="author-tag">Lifetime Member</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <div class="pricing-section" id="pricing">
+    <div class="pricing-inner">
+      <div class="section-label">VIP Plans</div>
+      <h2 class="section-title">CHOOSE YOUR<br><span class="gold">ACCESS</span></h2>
+      <p style="color:rgba(255,255,255,0.4);font-size:14px;margin-top:12px;">All plans paid via Telegram Stars ⭐ — instant access upon payment</p>
+
+      <div class="pricing-grid">
+
+        <!-- 1 Month -->
+        <div class="price-card reveal">
+          <div class="price-plan">1 Month VIP</div>
+          <div class="price-amount">
+            <span class="price-stars">1,000</span>
+            <span class="price-unit"><span class="star-icon">⭐</span> Stars</span>
+          </div>
+          <div class="price-old">Was 1,250 Stars</div>
+          <ul class="price-features">
+            <li>Full VIP Telegram Access</li>
+            <li>5 XAUUSD Signals Per Day</li>
+            <li>Entry, SL & TP Every Trade</li>
+            <li>Real-Time Notifications</li>
+            <li>30 Days of Premium Access</li>
+          </ul>
+          <a href="https://t.me/XaufxVIPbot" target="_blank" class="price-btn outline">Buy 1 Month →</a>
+        </div>
+
+        <!-- 2 Months FEATURED -->
+        <div class="price-card featured reveal">
+          <div class="price-badge">Most Popular</div>
+          <div class="price-plan">2 Months VIP</div>
+          <div class="price-amount">
+            <span class="price-stars">1,250</span>
+            <span class="price-unit"><span class="star-icon">⭐</span> Stars</span>
+          </div>
+          <div class="price-old">Was 1,750 Stars</div>
+          <ul class="price-features">
+            <li>Full VIP Telegram Access</li>
+            <li>5 XAUUSD Signals Per Day</li>
+            <li>Entry, SL & TP Every Trade</li>
+            <li>Real-Time Notifications</li>
+            <li>60 Days of Premium Access</li>
+            <li>Priority Support</li>
+          </ul>
+          <a href="https://t.me/XaufxVIPbot" target="_blank" class="price-btn">Buy 2 Months →</a>
+        </div>
+
+        <!-- Lifetime -->
+        <div class="price-card reveal">
+          <div class="price-plan">Lifetime VIP</div>
+          <div class="price-amount">
+            <span class="price-stars">2,500</span>
+            <span class="price-unit"><span class="star-icon">⭐</span> Stars</span>
+          </div>
+          <div class="price-old">Was 3,000 Stars</div>
+          <ul class="price-features">
+            <li>Permanent VIP Telegram Access</li>
+            <li>5 XAUUSD Signals Per Day</li>
+            <li>Entry, SL & TP Every Trade</li>
+            <li>Real-Time Notifications</li>
+            <li>Access Forever — No Renewal</li>
+            <li>All Future Updates Included</li>
+            <li>Highest Priority Support</li>
+          </ul>
+          <a href="https://t.me/XaufxVIPbot" target="_blank" class="price-btn outline">Buy Lifetime →</a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <span class="footer-logo">XAUFX VIP</span>
+    <p>Premium XAUUSD Gold Signals via Telegram</p>
+    <p style="margin-top:8px;">© 2025 XAUFX VIP · All rights reserved</p>
+    <p style="margin-top:16px;font-size:11px;opacity:0.5;">Trading involves risk. Past performance does not guarantee future results.</p>
+  </footer>
+
+</div><!-- end main-site -->
+
+<script>
+// ─── PARTICLE CANVAS ───
+const canvas = document.getElementById('particle-canvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+function createParticles() {
+  for (let i = 0; i < 80; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 2 + 0.5,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3,
+      alpha: Math.random() * 0.5 + 0.1,
+      gold: Math.random() > 0.5,
+    });
+  }
+}
+createParticles();
+
+function animateParticles() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particles.forEach(p => {
+    p.x += p.vx;
+    p.y += p.vy;
+    if (p.x < 0) p.x = canvas.width;
+    if (p.x > canvas.width) p.x = 0;
+    if (p.y < 0) p.y = canvas.height;
+    if (p.y > canvas.height) p.y = 0;
+
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = p.gold
+      ? `rgba(255,215,0,${p.alpha})`
+      : `rgba(255,255,255,${p.alpha * 0.5})`;
+    ctx.fill();
+  });
+  requestAnimationFrame(animateParticles);
+}
+animateParticles();
+
+// ─── FALLING LINES ───
+const linesContainer = document.getElementById('lines-container');
+for (let i = 0; i < 12; i++) {
+  const line = document.createElement('div');
+  line.className = 'line';
+  const height = Math.random() * 200 + 100;
+  line.style.cssText = `
+    left: ${Math.random() * 100}%;
+    height: ${height}px;
+    top: ${Math.random() * -200}px;
+    animation-duration: ${Math.random() * 4 + 3}s;
+    animation-delay: ${Math.random() * 5}s;
+  `;
+  linesContainer.appendChild(line);
+}
+
+// ─── EXPLODE TRANSITION ───
+function explodeIn() {
+  const overlay = document.getElementById('explode-overlay');
+  overlay.style.display = 'block';
+
+  // Create shards
+  const colors = ['#FFD700','#FFA500','#FFD700','#fff','#FFA500'];
+  for (let i = 0; i < 30; i++) {
+    const shard = document.createElement('div');
+    shard.className = 'shard';
+    const size = Math.random() * 60 + 10;
+    const x = 50 + (Math.random() - 0.5) * 200;
+    const y = 50 + (Math.random() - 0.5) * 200;
+    shard.style.cssText = `
+      width: ${size}px;
+      height: ${size * (Math.random() * 0.5 + 0.2)}px;
+      left: ${x}%;
+      top: ${y}%;
+      background: ${colors[Math.floor(Math.random() * colors.length)]};
+      opacity: 1;
+    `;
+    overlay.appendChild(shard);
+
+    const angle = Math.random() * Math.PI * 2;
+    const dist = Math.random() * 300 + 150;
+    const tx = Math.cos(angle) * dist;
+    const ty = Math.sin(angle) * dist;
+    const rot = Math.random() * 720 - 360;
+
+    shard.animate([
+      { transform: `translate(0,0) rotate(0deg)`, opacity: 1 },
+      { transform: `translate(${tx}px,${ty}px) rotate(${rot}deg)`, opacity: 0 }
+    ], { duration: 800 + Math.random() * 400, easing: 'cubic-bezier(0.25,0.46,0.45,0.94)', fill: 'forwards' });
+  }
+
+  // Flash
+  const flash = document.createElement('div');
+  flash.style.cssText = `position:fixed;inset:0;background:rgba(255,215,0,0.15);z-index:9997;pointer-events:none;`;
+  document.body.appendChild(flash);
+  flash.animate([{opacity:1},{opacity:0}], {duration:600, fill:'forwards'});
+
+  // Hide welcome, show main
+  setTimeout(() => {
+    document.getElementById('welcome-screen').style.opacity = '0';
+    document.getElementById('welcome-screen').style.transition = 'opacity 0.5s';
+  }, 300);
+
+  setTimeout(() => {
+    document.getElementById('welcome-screen').style.display = 'none';
+    overlay.style.display = 'none';
+    const main = document.getElementById('main-site');
+    main.style.display = 'block';
+    main.classList.add('visible');
+    flash.remove();
+    // trigger scroll reveals
+    initScrollReveal();
+    startWRCounter();
+  }, 700);
+}
+
+// ─── SCROLL REVEAL ───
+function initScrollReveal() {
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  reveals.forEach(el => observer.observe(el));
+}
+
+// ─── WIN RATE COUNTER ───
+function startWRCounter() {
+  const el = document.getElementById('wr-counter');
+  let current = 0;
+  const target = 88;
+  const step = () => {
+    current += 2;
+    if (current > target) current = target;
+    el.textContent = current + '%';
+    if (current < target) requestAnimationFrame(step);
+  };
+  setTimeout(step, 600);
+}
+</script>
+</body>
+</html>
 
